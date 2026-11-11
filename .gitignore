@@ -80,4 +80,5 @@ go.work.sum
 .env
 # Local application builds
 /build/
+/dist/
 /tileprint

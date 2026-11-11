@@ -48,6 +48,46 @@ Run regression tests:
 go test ./...
 ```
 
+## Automated builds and releases
+
+`.github/workflows/build.yml` tests and packages Windows x64, macOS Apple
+Silicon, macOS Intel, and Linux x64 on their native GitHub-hosted runners.
+Pushes to `main`, pull requests, and manual **Run workflow** runs upload packages
+to the run's **Artifacts** section (retained for 14 days). They do not publish
+a release.
+
+Push a version tag to publish a GitHub Release automatically:
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+Use `vMAJOR.MINOR.PATCH` or a prerelease such as `v0.2.0-beta.1`. The tag version
+is written into `mygo.json` only during packaging; the tracked file is restored
+afterwards. Prerelease tags produce GitHub prereleases. All four build jobs must
+pass before publishing. The release is staged as a draft, receives every package
+and `SHA256SUMS.txt`, then becomes public. A failed upload leaves the draft for a
+workflow rerun; reruns replace assets with the same names.
+
+Release assets include:
+
+- Windows: online setup, offline setup with WebView2, and portable ZIP.
+- macOS: DMG and ZIP containing the app bundle for each architecture.
+- Linux: tar.gz and Debian package. The desktop needs GTK 3 and WebKitGTK 4.1.
+
+The workflow uses GitHub's built-in token with `contents: write` only in the
+release job; no personal access token is required. Enable GitHub Actions in the
+repository and ensure organization policies allow the workflow actions and
+release writes. Signing certificates are not configured: Windows packages are
+unsigned, and macOS bundles use ad-hoc signing without Apple notarization.
+Real Windows/macOS/Linux installation and GUI smoke checks are still needed.
+
+`scripts/ci-package.py` stages versioned assets in `dist/` and can also be run
+from the repository root with Python 3 on the matching platform, for example
+`python3 scripts/ci-package.py darwin-arm64`. Run it in a clean checkout to avoid
+collecting stale build outputs.
+
 `main.go` contains the CLI entry point, `poster.go` the layout/PDF engine,
 `service.go` the shared preview/export service, and `gui.go` the MyGo integration.
 The layout is limited to 10,000 grid cells to keep preview/export responsive.
