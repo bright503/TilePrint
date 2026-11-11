@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	runtimeCommand()
 	opt := options{}
 	var gui bool
 	flag.StringVar(&opt.input, "in", "", "input image (PNG, JPEG, or GIF)")

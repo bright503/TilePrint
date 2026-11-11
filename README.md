@@ -52,6 +52,74 @@ go test ./...
 `service.go` the shared preview/export service, and `gui.go` the MyGo integration.
 The layout is limited to 10,000 grid cells to keep preview/export responsive.
 
+## Windows distribution
+
+The initial supported test target is **Windows 10 22H2 x64 / Windows 11 x64**.
+No Go or Node installation is needed on the user's computer. WebView2 is checked
+before a web window is created. If missing, a native Chinese dialog offers to
+install it, open Microsoft's download page, or exit. Downloads are verified with
+Windows Authenticode and must be signed by Microsoft Corporation before running.
+The interactive startup installer displays Microsoft's installation UI.
+
+The installer and uninstaller use Simplified Chinese (NSIS SimpChinese), including
+the standard wizard buttons, directory selection, completion page and desktop
+shortcut option. The language is declared in `mygo.json` and `locales/zh-Hans.json`.
+
+Build the online installer (run from the repository root):
+
+```sh
+go run scripts/package-windows.go
+```
+
+Build the offline installer, including Microsoft's full x64 Evergreen installer:
+
+```sh
+go run scripts/package-windows.go -offline
+# Or supply an already downloaded official x64 installer:
+go run scripts/package-windows.go -runtime-installer /path/to/MicrosoftEdgeWebView2RuntimeInstallerX64.exe
+```
+
+Outputs are in `build/windows-online/windows-amd64/` and
+`build/windows-offline/windows-amd64/`; distribute the `tileprint-setup-*.exe`.
+Online setup downloads WebView2 only when missing; offline setup extracts the
+bundled runtime installer without downloading it. Both wait for the runtime,
+check availability again, and report failure with Retry/Cancel rather than
+finishing successfully. Silent installation (`/S`) fails with exit code 1 when
+the dependency cannot be installed. Installation is per user by default.
+
+The MyGo CLI downloads NSIS automatically on Windows. To make installers from
+macOS, install NSIS first (`brew install nsis`). Only the build machine downloads
+the full runtime for `-offline`; end-user installation works without internet.
+Signature verification uses Windows PowerShell and the local Windows trust store;
+restricted enterprise policies or unavailable certificate trust can block it and
+produce an explicit error. These errors are not bypassed.
+
+Windows diagnostics are appended to
+`%LOCALAPPDATA%\TilePrint\logs\startup.log`. GUI load failures also show a native
+Chinese error message. The PDF export failure is shown in the interface, and a
+failed export preserves an existing destination file.
+
+For a portable executable without setup:
+
+```sh
+go run github.com/egoist/mygo/cmd/mygo@v0.8.3 build -platform windows/amd64 -skip-installer
+```
+
+The portable app offers online runtime installation when needed; for completely
+offline use on a clean PC, use the offline setup. Installers include an icon but
+are **unsigned** unless you configure a certificate or signing command under
+`windows` in `mygo.json`. SmartScreen reputation is separate from runtime
+installation. Do not disable SmartScreen or antivirus to work around it.
+
+Windows release verification (requires a real Windows machine/VM):
+
+- Clean Windows 10 22H2 x64 without WebView2: online installation and startup.
+- A disconnected clean machine: offline installation; retry/cancel on failure.
+- Existing WebView2: skip installation; run normally as a non-administrator.
+- Native startup prompt on the portable app, network failure, and logs.
+- Chinese/space-containing image and output paths, existing/open PDF output.
+- Preview selection, map page, and PDF page count at 100%, 150%, and 200% DPI.
+
 ## Quick start
 
 The command-line mode remains available when `-in` is supplied:

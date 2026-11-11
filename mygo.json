@@ -4,5 +4,12 @@
   "identifier": "com.tileprint.app",
   "version": "0.1.0",
   "icon": "resources/icon.png",
-  "out": "build"
+  "out": "build",
+  "windows": {
+    "installerInclude": "packaging/windows/webview2.nsh"
+  },
+  "i18n": {
+    "dir": "locales",
+    "source": "zh-Hans"
+  }
 }

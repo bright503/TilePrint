@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/egoist/mygo"
+	_ "tileprint/locales"
 )
 
 //go:embed web/*
@@ -20,6 +21,9 @@ var frontend embed.FS
 var appIcon []byte
 
 func startGUI() {
+	if !desktopReady() {
+		return
+	}
 	web, err := fs.Sub(frontend, "web")
 	if err != nil {
 		log.Fatal(err)
@@ -28,7 +32,16 @@ func startGUI() {
 	mygo.App.SetName("TilePrint")
 	mygo.Bind(&PosterService{})
 	mygo.App.WhenReady(func() {
+		// Window creation can fail even if a damaged runtime was detected on disk.
+		defer func() {
+			if failure := recover(); failure != nil {
+				desktopError(fmt.Errorf("%v", failure))
+				mygo.App.Quit()
+			}
+		}()
+
 		window := mygo.NewWindow(mygo.WindowOptions{Title: "TilePrint · A4 拼图打印", URL: "/", Width: 1120, Height: 780, MinWidth: 820, MinHeight: 600})
+		window.Page().OnDidFailLoad(func(err *mygo.LoadError) { go desktopError(err) })
 		if runtime.GOOS == "darwin" {
 			if err := mygo.App.Dock.SetIcon(appIcon); err != nil {
 				log.Printf("set Dock icon: %v", err)
@@ -40,7 +53,7 @@ func startGUI() {
 		}
 	})
 	if err := mygo.App.Run(); err != nil {
-		log.Fatal(err)
+		desktopError(err)
 	}
 }
 
