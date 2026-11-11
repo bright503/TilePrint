@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TilePrint · A4 拼图打印</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><div><strong>TilePrint</strong><span>A4 拼图打印</span></div><small>把一张图片，变成一整面风景。</small></header>
+<main>
+<aside>
+ <section><h2>01 / 图片</h2><button id="open" class="secondary">选择图片…</button><p id="source">支持 PNG、JPEG、GIF</p></section>
+ <fieldset id="settings" disabled>
+ <section><h2>02 / 成品尺寸</h2><div class="pair"><label>宽度 · mm<input id="width" type="number" min="1" value="600"></label><label>高度 · mm<input id="height" type="number" min="1" value="900"></label></div><label>A4 方向<select id="orientation"><option value="portrait">纵向 · 210 × 297 mm</option><option value="landscape">横向 · 297 × 210 mm</option><option value="auto">自动 · 使用较少纸张</option></select></label></section>
+ <section><h2>03 / 构图</h2><label>缩放 <output id="zoomValue">0%</output><input id="zoom" type="range" min="0" max="1" step="0.01" value="0"></label><div class="range-label"><span>完整显示</span><span>填满画面</span></div><div class="nudge"><button type="button" data-dx="0" data-dy="-5" aria-label="上移 5 毫米">↑</button><div><button type="button" data-dx="-5" data-dy="0" aria-label="左移 5 毫米">←</button><button id="reset" type="button">居中</button><button type="button" data-dx="5" data-dy="0" aria-label="右移 5 毫米">→</button></div><button type="button" data-dx="0" data-dy="5" aria-label="下移 5 毫米">↓</button></div><p id="offset">偏移 X 0 / Y 0 mm</p></section>
+ <section><h2>04 / 打印设置</h2><label class="check"><input id="map" type="checkbox">第一页打印拼接地图</label></section>
+ </fieldset>
+</aside>
+<div class="workspace"><div class="preview-heading"><span>成品预览</span><span id="count">等待图片</span></div><div id="stage"><canvas id="preview" aria-label="图片与 A4 分块预览"></canvas><div id="empty"><strong>从一张图片开始</strong><p>选择图片，设置成品尺寸，即可预览 A4 分块。</p></div></div><div class="legend"><span>蓝线：A4 分界</span><span>红色：不打印</span><span>空白图块自动省略</span></div><footer><p id="status" role="status" aria-live="polite">打印时请选择「实际大小 / 100%」，并使用支持 A4 无边距的打印机。</p><button id="export" disabled>导出 A4 PDF…</button></footer></div>
+</main><script type="module" src="app.js"></script>
+</body></html>

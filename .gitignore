@@ -6,7 +6,8 @@
 ._*
 
 # Custom folder icons
-Icon
+Icon
+
 
 # Volume root files
 .DocumentRevisions-V100
@@ -77,3 +78,6 @@ go.work.sum
 
 # env file
 .env
+# Local application builds
+/build/
+/tileprint

@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-
-	"fyne.io/fyne/v2"
 )
 
 func TestImagePlacement(t *testing.T) {
@@ -116,45 +114,6 @@ func TestVisibleTilesSkipsBlankColumns(t *testing.T) {
 	}
 	if !closeEnough(tiles[0].bounds.x, 210) {
 		t.Fatalf("visible tile starts at %.2fmm; want the middle column at 210mm", tiles[0].bounds.x)
-	}
-}
-
-func TestPreviewDrawsTargetFrameAndA4Cuts(t *testing.T) {
-	preview := newPosterPreview()
-	preview.width, preview.height = 420, 594 // exactly two portrait A4 sheets in each direction
-	preview.orientation = "portrait"
-	renderer := preview.CreateRenderer()
-	renderer.Layout(fyne.NewSize(700, 700))
-
-	if !preview.target.Visible() || !preview.frame.Visible() {
-		t.Fatal("target size frame is not visible")
-	}
-	visibleLines := 0
-	for _, line := range preview.lines {
-		if line.Visible() {
-			visibleLines++
-		}
-	}
-	if visibleLines != 2 {
-		t.Fatalf("preview has %d A4 cut lines; want 2", visibleLines)
-	}
-}
-
-func TestPreviewTapTogglesTilePrinting(t *testing.T) {
-	preview := newPosterPreview()
-	preview.Set(image.NewRGBA(image.Rect(0, 0, 40, 20)), 420, 594, 0, 0, 0, "portrait", map[tileKey]bool{})
-	renderer := preview.CreateRenderer()
-	renderer.Layout(fyne.NewSize(700, 700))
-	if len(preview.tiles) == 0 {
-		t.Fatal("expected visible preview tiles")
-	}
-	first := preview.tiles[0].visible
-	preview.Tapped(&fyne.PointEvent{Position: fyne.NewPos(
-		preview.targetPosition.X+float32((first.x+first.width/2)*preview.previewScale),
-		preview.targetPosition.Y+float32((first.y+first.height/2)*preview.previewScale),
-	)})
-	if !preview.skipped[tileKey{col: preview.tiles[0].col, row: preview.tiles[0].row}] {
-		t.Fatal("tap did not mark the tile as skipped")
 	}
 }
 

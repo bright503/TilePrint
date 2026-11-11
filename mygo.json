@@ -1,0 +1,8 @@
+{
+  "name": "TilePrint",
+  "slug": "tileprint",
+  "identifier": "com.tileprint.app",
+  "version": "0.1.0",
+  "icon": "resources/icon.png",
+  "out": "build"
+}
