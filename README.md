@@ -1,6 +1,14 @@
 # TilePrint
 
+English | [简体中文](README.zh-CN.md)
+
 TilePrint turns one image into a PDF made of edge-to-edge A4 tiles. Print the PDF at **Actual size / 100%** and join the sheets to make a poster at the requested physical size.
+
+## Screenshots
+
+![TilePrint desktop interface with image placement and A4 tile preview](docs/screenshots/desktop-preview.png)
+
+Running on macOS with the bundled `resources/icon.png`: a 600 × 900 mm poster split across 9 portrait A4 sheets. Black outlines mark the finished size; blue lines mark A4 boundaries.
 
 ## Desktop interface
 
